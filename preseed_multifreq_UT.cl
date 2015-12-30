@@ -52,22 +52,22 @@ void preseed( __global const uint *dataIn,
 
     //if registers are the slowing point of this algorithm, then can possibly reuse variables, though this should be okay as a test
     xValPairs[0u] = xVals.s0 + xVals.s1; //sum of real and imaginary
-    xValPairs[1u] = xVals.s0 - xVals.s1; //difference of real and imaginary
+    xValPairs[1u] = xVals.s1 - xVals.s0; //difference of real and imaginary
     xValPairs[2u] = xVals.s2 + xVals.s3;
-    xValPairs[3u] = xVals.s2 - xVals.s3;
+    xValPairs[3u] = xVals.s3 - xVals.s2;
     xValPairs[4u] = xVals.s4 + xVals.s5;
-    xValPairs[5u] = xVals.s4 - xVals.s5;
+    xValPairs[5u] = xVals.s5 - xVals.s4;
     xValPairs[6u] = xVals.s6 + xVals.s7;
-    xValPairs[7u] = xVals.s6 - xVals.s7;
+    xValPairs[7u] = xVals.s7 - xVals.s6;
 
     yValPairs[0u] = yVals.s0 + yVals.s1;
-    yValPairs[1u] = yVals.s1 - yVals.s0; //note the index swap to perform the extra subtraction
+    yValPairs[1u] = yVals.s0 - yVals.s1; //note the index swap to perform the extra subtraction
     yValPairs[2u] = yVals.s2 + yVals.s3;
-    yValPairs[3u] = yVals.s3 - yVals.s2;
+    yValPairs[3u] = yVals.s2 - yVals.s3;
     yValPairs[4u] = yVals.s4 + yVals.s5;
-    yValPairs[5u] = yVals.s5 - yVals.s4;
+    yValPairs[5u] = yVals.s4 - yVals.s5;
     yValPairs[6u] = yVals.s6 + yVals.s7;
-    yValPairs[7u] = yVals.s7 - yVals.s6;
+    yValPairs[7u] = yVals.s6 - yVals.s7;
 
     //output results
     //Each work item outputs 4 x 4 complex values (so 32 values rather than 16)

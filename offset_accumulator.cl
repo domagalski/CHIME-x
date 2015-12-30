@@ -1,10 +1,10 @@
 //ACTUAL_NUM_ELEMENTS, ACTUAL_NUM_FREQUENCIES defined at compile time
 //#define ACTUAL_NUM_ELEMENTS         16u
 //#define ACTUAL_NUM_FREQUENCIES      256u
-#define NUM_TIMESTEPS_LOCAL         1024u
-#define OFFSET_FOR_1_TIMESTEP       (ACTUAL_NUM_ELEMENTS*ACTUAL_NUM_FREQUENCIES/4u) //divide by 4 to account for the 4 B per uint
+#define NUM_TIMESTEPS_LOCAL         BASE_ACCUM
+#define OFFSET_FOR_1_TIMESTEP       (NUM_ELEMENTS*NUM_FREQUENCIES/4u) //divide by 4 to account for the 4 B per uint
 
-__kernel void offsetAccumulateElements (__global uint *inputData,
+__kernel void offsetAccumulateElements (__global const uint *inputData,
                                         __global uint *outputData){
     uint    data;
     uint4   dataExpanded = (uint4)(0u,0u,0u,0u);
@@ -15,7 +15,7 @@ __kernel void offsetAccumulateElements (__global uint *inputData,
 
     //only compute values if the output address is going to be valid
     //address * 8 accounts for the 8 values (4 pairs of complex numbers) accessed by loading 4 B of packed data
-    if (address * 8u + 7u < ACTUAL_NUM_ELEMENTS*ACTUAL_NUM_FREQUENCIES*2u){ //check to see if the output address falls in a useful range (i.e. < Num_Elements x Num_Freq)
+    if (address * 8u + 7u < NUM_ELEMENTS*NUM_FREQUENCIES*2u){ //check to see if the output address falls in a useful range (i.e. < Num_Elements x Num_Freq)
         address += get_group_id(2)*NUM_TIMESTEPS_LOCAL*OFFSET_FOR_1_TIMESTEP;
 
         for (int i = 0; i < NUM_TIMESTEPS_LOCAL; i++){

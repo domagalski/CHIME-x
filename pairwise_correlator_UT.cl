@@ -157,48 +157,49 @@ void corr ( __global const uint *packed,
         }
     }
     //output: 32 numbers--> 16 pairs of real/imag numbers
-    //16 pairs * 8 (local_size(0)) * 8 (local_size(1)) = 1024
+    //32 * 8 (local_size(0)) * 8 (local_size(1)) = 2048 ints/block
     uint addr_o = ((BLOCK_ID_CORR * 2048u) + (LOCAL_Y * 256u) + (LOCAL_X * 8u)) + (FREQUENCY_BAND * NUM_BLOCKS_x_2048);
 
     if (LOCAL_X == 0 && LOCAL_Y == 0){
         while(atomic_cmpxchg(&block_lock[FREQUENCY_BAND*NUM_BLOCKS + BLOCK_ID_CORR],0,1)); //wait until unlocked
     }
         barrier(CLK_GLOBAL_MEM_FENCE); //sync point for the group
-        corr_buf[addr_o+0u]+=   (corr_a0 >> 16u) + (corr_a1 & 0xffff) ; //real value
-        corr_buf[addr_o+1u]+=   (corr_a1 >> 16u) - (corr_a0 & 0xffff) ;
-        corr_buf[addr_o+2u]+=   (corr_a2 >> 16u) + (corr_a3 & 0xffff) ;
-        corr_buf[addr_o+3u]+=   (corr_a3 >> 16u) - (corr_a2 & 0xffff) ;
-        corr_buf[addr_o+4u]+=   (corr_e0 >> 16u) + (corr_e1 & 0xffff) ;
-        corr_buf[addr_o+5u]+=   (corr_e1 >> 16u) - (corr_e0 & 0xffff) ;
-        corr_buf[addr_o+6u]+=   (corr_e2 >> 16u) + (corr_e3 & 0xffff) ;
-        corr_buf[addr_o+7u]+=   (corr_e3 >> 16u) - (corr_e2 & 0xffff) ;
+        corr_buf[addr_o+0u]   += (corr_a0 >> 16u)   + (corr_a1 & 0xffff); //real value
+        corr_buf[addr_o+1u]   += (corr_a0 & 0xffff) - (corr_a1 >> 16u)  ;
+        corr_buf[addr_o+2u]   += (corr_a2 >> 16u)   + (corr_a3 & 0xffff);
+        corr_buf[addr_o+3u]   += (corr_a2 & 0xffff) - (corr_a3 >> 16u)  ;
+        corr_buf[addr_o+4u]   += (corr_e0 >> 16u)   + (corr_e1 & 0xffff);
+        corr_buf[addr_o+5u]   += (corr_e0 & 0xffff) - (corr_e1 >> 16u)  ;
+        corr_buf[addr_o+6u]   += (corr_e2 >> 16u)   + (corr_e3 & 0xffff);
+        corr_buf[addr_o+7u]   += (corr_e2 & 0xffff) - (corr_e3 >> 16u)  ;
 
-        corr_buf[addr_o+64u]+=  (corr_b0 >> 16u) + (corr_b1 & 0xffff) ;
-        corr_buf[addr_o+65u]+=  (corr_b1 >> 16u) - (corr_b0 & 0xffff) ;
-        corr_buf[addr_o+66u]+=  (corr_b2 >> 16u) + (corr_b3 & 0xffff) ;
-        corr_buf[addr_o+67u]+=  (corr_b3 >> 16u) - (corr_b2 & 0xffff) ;
-        corr_buf[addr_o+68u]+=  (corr_f0 >> 16u) + (corr_f1 & 0xffff) ;
-        corr_buf[addr_o+69u]+=  (corr_f1 >> 16u) - (corr_f0 & 0xffff) ;
-        corr_buf[addr_o+70u]+=  (corr_f2 >> 16u) + (corr_f3 & 0xffff) ;
-        corr_buf[addr_o+71u]+=  (corr_f3 >> 16u) - (corr_f2 & 0xffff) ;
+        corr_buf[addr_o+64u]  += (corr_b0 >> 16u)   + (corr_b1 & 0xffff);
+        corr_buf[addr_o+65u]  += (corr_b0 & 0xffff) - (corr_b1 >> 16u)  ;
+        corr_buf[addr_o+66u]  += (corr_b2 >> 16u)   + (corr_b3 & 0xffff);
+        corr_buf[addr_o+67u]  += (corr_b2 & 0xffff) - (corr_b3 >> 16u)  ;
+        corr_buf[addr_o+68u]  += (corr_f0 >> 16u)   + (corr_f1 & 0xffff);
+        corr_buf[addr_o+69u]  += (corr_f0 & 0xffff) - (corr_f1 >> 16u)  ;
+        corr_buf[addr_o+70u]  += (corr_f2 >> 16u)   + (corr_f3 & 0xffff);
+        corr_buf[addr_o+71u]  += (corr_f2 & 0xffff) - (corr_f3 >> 16u)  ;
 
-        corr_buf[addr_o+128u]+= (corr_c0 >> 16u) + (corr_c1 & 0xffff) ;
-        corr_buf[addr_o+129u]+= (corr_c1 >> 16u) - (corr_c0 & 0xffff) ;
-        corr_buf[addr_o+130u]+= (corr_c2 >> 16u) + (corr_c3 & 0xffff) ;
-        corr_buf[addr_o+131u]+= (corr_c3 >> 16u) - (corr_c2 & 0xffff) ;
-        corr_buf[addr_o+132u]+= (corr_g0 >> 16u) + (corr_g1 & 0xffff) ;
-        corr_buf[addr_o+133u]+= (corr_g1 >> 16u) - (corr_g0 & 0xffff) ;
-        corr_buf[addr_o+134u]+= (corr_g2 >> 16u) + (corr_g3 & 0xffff) ;
-        corr_buf[addr_o+135u]+= (corr_g3 >> 16u) - (corr_g2 & 0xffff) ;
+        corr_buf[addr_o+128u] += (corr_c0 >> 16u)   + (corr_c1 & 0xffff);
+        corr_buf[addr_o+129u] += (corr_c0 & 0xffff) - (corr_c1 >> 16u)  ;
+        corr_buf[addr_o+130u] += (corr_c2 >> 16u)   + (corr_c3 & 0xffff);
+        corr_buf[addr_o+131u] += (corr_c2 & 0xffff) - (corr_c3 >> 16u)  ;
+        corr_buf[addr_o+132u] += (corr_g0 >> 16u)   + (corr_g1 & 0xffff);
+        corr_buf[addr_o+133u] += (corr_g0 & 0xffff) - (corr_g1 >> 16u)  ;
+        corr_buf[addr_o+134u] += (corr_g2 >> 16u)   + (corr_g3 & 0xffff);
+        corr_buf[addr_o+135u] += (corr_g2 & 0xffff) - (corr_g3 >> 16u)  ;
 
-        corr_buf[addr_o+192u]+= (corr_d0 >> 16u) + (corr_d1 & 0xffff) ;
-        corr_buf[addr_o+193u]+= (corr_d1 >> 16u) - (corr_d0 & 0xffff) ;
-        corr_buf[addr_o+194u]+= (corr_d2 >> 16u) + (corr_d3 & 0xffff) ;
-        corr_buf[addr_o+195u]+= (corr_d3 >> 16u) - (corr_d2 & 0xffff) ;
-        corr_buf[addr_o+196u]+= (corr_h0 >> 16u) + (corr_h1 & 0xffff) ;
-        corr_buf[addr_o+197u]+= (corr_h1 >> 16u) - (corr_h0 & 0xffff) ;
-        corr_buf[addr_o+198u]+= (corr_h2 >> 16u) + (corr_h3 & 0xffff) ;
-        corr_buf[addr_o+199u]+= (corr_h3 >> 16u) - (corr_h2 & 0xffff) ;
+        corr_buf[addr_o+192u] += (corr_d0 >> 16u)   + (corr_d1 & 0xffff);
+        corr_buf[addr_o+193u] += (corr_d0 & 0xffff) - (corr_d1 >> 16u)  ;
+        corr_buf[addr_o+194u] += (corr_d2 >> 16u)   + (corr_d3 & 0xffff);
+        corr_buf[addr_o+195u] += (corr_d2 & 0xffff) - (corr_d3 >> 16u)  ;
+        corr_buf[addr_o+196u] += (corr_h0 >> 16u)   + (corr_h1 & 0xffff);
+        corr_buf[addr_o+197u] += (corr_h0 & 0xffff) - (corr_h1 >> 16u)  ;
+        corr_buf[addr_o+198u] += (corr_h2 >> 16u)   + (corr_h3 & 0xffff);
+        corr_buf[addr_o+199u] += (corr_h2 & 0xffff) - (corr_h3 >> 16u)  ;
+
         barrier(CLK_GLOBAL_MEM_FENCE); //make sure everyone is done
 
     if (LOCAL_X == 0 && LOCAL_Y == 0)

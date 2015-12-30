@@ -1,20 +1,21 @@
+
 CC	= gcc
+OPTIMIZE	= -Wall -O4 -std=gnu99 -msse3 -ggdb
 INC	= -I$(AMDAPPSDKROOT)/include -I$(AMDAPPSDKROOT)/include/CAL
 LIBS	= -lOpenCL -lm -L$(AMDAPPSDKROOT)/lib/x86_64/
-
-OPTIMIZE= -Wall -O4 -std=gnu99 -msse3 -ggdb
 CFLAGS	= $(OPTIMIZE) $(INC)
+SOURCES	=main_wrapper.c amd_firepro_error_code_list_for_opencl.c input_generator.c gpu_data_reorg.c gpu_cpu_helpers.c cpu_corr_test.c
+OBJECTS	=$(SOURCES:.c=.o)
+EXECUTABLE=correlator_test
 
-OBJS	= main_wrapper.o
-PROGRAM	= correlator_test
+all: $(SOURCES) $(EXECUTABLE)
 
-$(PROGRAM) : $(OBJS)
-	$(CC) $(OBJS) $(LIBS) -o $@
 
-clean:
-	rm -rf *.o *~ $(PROGRAM)
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LIBS) $(OBJECTS) -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
-main_wrapper.o :  main_wrapper.c
+clean:
+	rm -rf *.o *~ $(EXECUTABLE)
