@@ -211,7 +211,7 @@ int main(int argc, char ** argv) {
                     return -1;
                 }
                 break;
-            case 'u':
+            case 'U':
                 upper_triangle_convention = atoi(optarg);
                 if (upper_triangle_convention <0 || upper_triangle_convention > 1){
                     printf("Invalid parameter for upper_triangle_convention.  See help for options\n");
@@ -220,7 +220,8 @@ int main(int argc, char ** argv) {
                 }
                 break;
             default:
-                printf("Invalid option, run with -h to see options");
+                //printf("Invalid option\n"); //does this automatically
+                print_help();
                 return -1;
                 break;
         }
